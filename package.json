@@ -1,0 +1,18 @@
+{
+  "name": "galili-stress-test",
+  "version": "1.0.0",
+  "private": true,
+  "description": "מבחן לחץ לחיסכון פנסיוני על בסיס נתוני mygemel.net",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "netlify dev"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  }
+}

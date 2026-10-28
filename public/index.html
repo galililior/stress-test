@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>מבחן לחץ לחיסכון | גלילי פיננסים</title>
+  <meta name="description" content="בדקו כיצד היה מגיב החיסכון שלכם למשברים היסטוריים, על בסיס נתוני החשיפה העדכניים של המסלולים שלכם.">
+  <link rel="icon" href="logo.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy:     { 950: '#0A1628', 900: '#0F1F3A', 800: '#172B4D', 700: '#22395F' },
+            gold:     { 600: '#9C7F45', 500: '#B8975A', 300: '#D9C496', 100: '#F4EDDD' },
+            charcoal: { 900: '#1F2328', 700: '#3D434B', 500: '#5F6670' },
+            paper:    '#F7F6F2',
+            burgundy: { 700: '#7A1F2B', 50: '#F7ECEE' },
+            forest:   { 700: '#1F5C46', 50: '#E9F2EE' },
+            bond:     '#B8975A',
+            other:    '#C9CDD3',
+          },
+          fontFamily: {
+            serif: ['"Frank Ruhl Libre"', 'serif'],
+            sans:  ['Assistant', 'Arial', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    html { font-size: 18px; }
+    body { font-family: Assistant, Arial, sans-serif; }
+    :focus-visible { outline: 3px solid #B8975A; outline-offset: 3px; }
+    .field { width: 100%; font-size: 1.15rem; padding: .8rem 1rem; border-radius: .5rem; border: 2px solid rgba(95,102,112,.4); background: rgba(247,246,242,.5); }
+    .field:focus { border-color: #22395F; outline: none; }
+    .field.invalid { border-color: #7A1F2B; }
+    .bar-seg { transition: width .8s ease; }
+    @media (prefers-reduced-motion: reduce) { .bar-seg { transition: none; } }
+  </style>
+</head>
+
+<body class="bg-paper text-charcoal-900 min-h-screen flex flex-col">
+
+  <!-- ===== Header ===== -->
+  <header class="bg-navy-900 border-b-4 border-gold-500">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-5 flex items-center gap-5">
+      <div class="bg-white rounded-xl p-1.5 ring-1 ring-gold-300 shadow-md shrink-0">
+        <img src="logo.png" alt="לוגו גלילי פיננסים" class="h-20 w-20 sm:h-24 sm:w-24 object-contain">
+      </div>
+      <div>
+        <p class="text-gold-300 tracking-wide text-base">גלילי פיננסים · תכנון פיננסי ופרישה</p>
+        <h1 class="font-serif text-white text-3xl sm:text-4xl font-bold leading-tight">מבחן לחץ לחיסכון שלכם</h1>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-10">
+
+    <!-- ===== Intro ===== -->
+    <section class="mb-8 max-w-3xl">
+      <p class="text-xl leading-relaxed text-charcoal-700">
+        הזינו עד שלושה מוצרים (קרן השתלמות, קופת גמל, קרן פנסיה, פוליסת חיסכון ועוד), עם מספר המסלול והסכום הצבור בכל אחד.
+        נשלוף את הרכב ההשקעות העדכני של כל מסלול, ונראה כיצד היה מגיב החיסכון המשולב שלכם למשברים מוכרים.
+      </p>
+    </section>
+
+    <form id="stress-form" novalidate>
+      <!-- ===== Products ===== -->
+      <section class="bg-white rounded-2xl shadow-sm ring-1 ring-black/5 p-6 sm:p-8 mb-6" aria-labelledby="products-title">
+        <h2 id="products-title" class="font-serif text-2xl text-navy-900 font-bold mb-2">המוצרים שלכם</h2>
+        <p class="text-base text-charcoal-500 mb-6">מספר המסלול (קוד אוצר) מופיע בדוח השנתי או באזור האישי באתר החברה המנהלת. מוצר 1 חובה, השאר לפי הצורך.</p>
+        <div id="product-rows" class="space-y-5"></div>
+      </section>
+
+      <!-- ===== Manual scenario ===== -->
+      <section class="bg-white rounded-2xl shadow-sm ring-1 ring-black/5 p-6 sm:p-8 mb-6" aria-labelledby="manual-title">
+        <h2 id="manual-title" class="font-serif text-2xl text-navy-900 font-bold mb-2">תרחיש ידני <span class="text-lg font-sans font-normal text-charcoal-500">(רשות)</span></h2>
+        <p class="text-base text-charcoal-500 mb-6">הזינו שינוי באחוזים, עם מינוס לירידה. לדוגמה: ‎-30 למניות ו-‎-8 לאג״ח. השאירו ריק כדי לדלג.</p>
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label for="manual-stock" class="block text-lg font-semibold mb-2">שינוי במדד המניות (%)</label>
+            <input id="manual-stock" type="text" autocomplete="off" maxlength="6" dir="ltr" placeholder="-30" class="field text-right">
+          </div>
+          <div>
+            <label for="manual-bond" class="block text-lg font-semibold mb-2">שינוי במדד האג״ח (%)</label>
+            <input id="manual-bond" type="text" autocomplete="off" maxlength="6" dir="ltr" placeholder="-8" class="field text-right">
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-3 mt-4" aria-label="הוספת מינוס מהירה">
+          <button type="button" data-minus="manual-stock" class="text-lg px-4 py-2 rounded-lg border-2 border-navy-700/30 hover:border-navy-700 text-navy-900">± הפוך סימן במניות</button>
+          <button type="button" data-minus="manual-bond" class="text-lg px-4 py-2 rounded-lg border-2 border-navy-700/30 hover:border-navy-700 text-navy-900">± הפוך סימן באג״ח</button>
+        </div>
+      </section>
+
+      <div class="flex flex-col sm:flex-row sm:items-center gap-4 mb-10">
+        <button id="submit-btn" type="submit"
+                class="bg-navy-900 hover:bg-navy-700 text-white text-xl font-semibold px-10 py-4 rounded-lg border-b-4 border-gold-500 transition-colors disabled:opacity-60 disabled:cursor-wait">
+          הריצו מבחן לחץ
+        </button>
+        <p id="status" class="text-lg" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+
+    <!-- ===== Results ===== -->
+    <section id="results" class="hidden focus:outline-none" aria-labelledby="results-title" tabindex="-1">
+
+      <!-- Portfolio summary -->
+      <div class="bg-navy-900 text-white rounded-2xl p-6 sm:p-8 mb-6">
+        <p class="text-gold-300 text-base mb-1">התיק המשולב</p>
+        <h2 id="results-title" class="font-serif text-2xl sm:text-3xl font-bold mb-3">סך החיסכון: <span id="total-amount"></span></h2>
+        <p class="text-lg text-white/85" id="products-count"></p>
+
+        <div class="mt-7">
+          <h3 class="text-lg font-semibold mb-3">חלוקת התיק המשולב</h3>
+          <div class="h-6 w-full rounded-full overflow-hidden flex bg-white/10" role="img" id="alloc-bar" aria-label="">
+            <div class="bar-seg bg-[#4C74B5]" id="seg-stock" style="width:0"></div>
+            <div class="bar-seg bg-bond" id="seg-bond" style="width:0"></div>
+            <div class="bar-seg bg-other" id="seg-other" style="width:0"></div>
+          </div>
+          <ul class="mt-4 flex flex-wrap gap-x-8 gap-y-2 text-lg">
+            <li class="flex items-center gap-2"><span class="w-4 h-4 rounded-sm bg-[#4C74B5]"></span>מניות: <strong id="lg-stock"></strong></li>
+            <li class="flex items-center gap-2"><span class="w-4 h-4 rounded-sm bg-bond"></span>אג״ח: <strong id="lg-bond"></strong></li>
+            <li class="flex items-center gap-2"><span class="w-4 h-4 rounded-sm bg-other"></span>אחר (מזומן, הלוואות ועוד): <strong id="lg-other"></strong></li>
+          </ul>
+          <p id="alloc-note" class="hidden mt-3 text-base text-white/70"></p>
+        </div>
+      </div>
+
+      <!-- Per-product -->
+      <div id="product-cards" class="grid gap-4 md:grid-cols-3 mb-6"></div>
+      <p id="fetch-warning" class="hidden bg-burgundy-50 text-burgundy-700 font-semibold text-lg rounded-xl p-4 mb-6" role="alert"></p>
+
+      <!-- Scenario cards -->
+      <h2 class="font-serif text-2xl text-navy-900 font-bold mb-4 mt-4">מה היה קורה בתרחישים?</h2>
+      <div id="scenarios" class="grid gap-6 md:grid-cols-2 mb-10"></div>
+
+      <!-- Reassurance -->
+      <div class="bg-gold-100 border-r-4 border-gold-500 rounded-xl p-6 sm:p-8 mb-8">
+        <h2 class="font-serif text-2xl text-navy-900 font-bold mb-4">חשוב לזכור</h2>
+        <div class="space-y-4 text-lg leading-relaxed text-charcoal-900">
+          <p><strong>ירידה בערך החיסכון היא הפסד "על הנייר" בלבד.</strong> כל עוד לא פודים או מעבירים את הכסף בזמן הירידה, היחידות שבבעלותכם נשארות שלכם, וממשיכות ליהנות מההתאוששות כשהיא מגיעה.</p>
+          <p><strong>שוק ההון נוטה לתקן לאורך זמן.</strong> לאחר משבר הקורונה במרץ 2020, מדדי המניות המובילים חזרו לשיאם בתוך כחצי שנה עד שנה. גם אחרי הירידות של 2022 השווקים התאוששו בשנים שאחריהן.</p>
+          <p><strong>החלטות בזמן משבר הן היקרות ביותר.</strong> מי שמכר בשפל הפך הפסד זמני להפסד קבוע, ופספס את העליות שבאו אחריו. אם מועד השימוש בכסף קרוב, זו הזדמנות טובה לבחון יחד עם מתכנן פיננסי האם רמת הסיכון של המסלולים עדיין מתאימה לכם.</p>
+        </div>
+      </div>
+
+      <p class="text-base text-charcoal-500 leading-relaxed">
+        נתוני המסלולים נשלפו מאתר
+        <a href="https://www.mygemel.net" target="_blank" rel="noopener noreferrer" class="underline text-navy-700">mygemel.net</a>.
+        החישוב הוא סימולציה פשטנית: הוא מניח שכל רכיב המניות והאג״ח בתיק זז כמו המדד בתרחיש, ושיתר הנכסים לא משתנים.
+        אין לראות במידע זה ייעוץ השקעות או ייעוץ פנסיוני המותאם לצרכיכם.
+      </p>
+    </section>
+  </main>
+
+  <footer class="bg-navy-950 text-white/70 text-base">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row gap-2 justify-between">
+      <span>© <span id="year"></span> גלילי פיננסים</span>
+      <span>המידע באתר אינו מהווה המלצה או ייעוץ השקעות.</span>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const PRODUCT_ROWS = 3;
+
+      const SCENARIOS = [
+        { title: 'משבר הקורונה', period: 'מרץ 2020', stock: -25, bond: -5 },
+        { title: 'משבר האינפלציה והריבית', period: 'שנת 2022', stock: -15, bond: -10 },
+      ];
+
+      const $ = (id) => document.getElementById(id);
+      const form = $('stress-form');
+      const statusEl = $('status');
+      const btn = $('submit-btn');
+
+      const ils = (n) => Math.round(n).toLocaleString('en-US') + ' ₪';
+      const pct = (n) => `${n.toLocaleString('he-IL', { maximumFractionDigits: 1 })}%`;
+      const signed = (n, fmt) => (n < 0 ? '−' : n > 0 ? '+' : '') + fmt(Math.abs(n));
+
+      $('year').textContent = new Date().getFullYear();
+
+      function el(tag, className, text) {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text !== undefined) node.textContent = text;
+        return node;
+      }
+
+      // מספרים בתוך טקסט RTL: כיוון LTR כדי שהסימן יופיע לפני המספר
+      function num(tag, className, text) {
+        const node = el(tag, className, text);
+        node.dir = 'ltr';
+        return node;
+      }
+
+      // ---------- שורות מוצרים ----------
+      const rowsWrap = $('product-rows');
+      for (let i = 1; i <= PRODUCT_ROWS; i++) {
+        const row = el('fieldset', 'grid gap-4 sm:grid-cols-[auto_1fr_1fr] sm:items-end border-t border-black/5 pt-5 first:border-0 first:pt-0');
+        const legend = el('legend', 'sr-only', `מוצר ${i}`);
+        const badge = el('div', 'font-serif text-xl text-gold-600 font-bold sm:pb-3 sm:w-24', `מוצר ${i}`);
+
+        const codeBox = el('div');
+        const codeLabel = el('label', 'block text-lg font-semibold mb-2', 'מספר מסלול (קוד אוצר)');
+        codeLabel.htmlFor = `code-${i}`;
+        const code = el('input', 'field');
+        Object.assign(code, { id: `code-${i}`, type: 'text', inputMode: 'numeric', autocomplete: 'off', maxLength: 7,
+                              placeholder: i === 1 ? 'לדוגמה: 456' : 'לא חובה' });
+        code.addEventListener('input', () => { code.value = code.value.replace(/\D/g, '').slice(0, 7); code.classList.remove('invalid'); });
+        codeBox.append(codeLabel, code);
+
+        const amtBox = el('div');
+        const amtLabel = el('label', 'block text-lg font-semibold mb-2', 'סכום צבור (₪)');
+        amtLabel.htmlFor = `amount-${i}`;
+        const amount = el('input', 'field');
+        Object.assign(amount, { id: `amount-${i}`, type: 'text', inputMode: 'numeric', autocomplete: 'off',
+                                placeholder: i === 1 ? 'לדוגמה: 850,000' : 'לא חובה' });
+        amount.addEventListener('input', () => {
+          const digits = amount.value.replace(/\D/g, '').slice(0, 12);
+          amount.value = digits ? Number(digits).toLocaleString('en-US') : '';
+          amount.classList.remove('invalid');
+        });
+        amtBox.append(amtLabel, amount);
+
+        row.append(legend, badge, codeBox, amtBox);
+        rowsWrap.append(row);
+      }
+
+      // ---------- תרחיש ידני: מינוס ----------
+      function cleanSigned(input) {
+        let v = input.value.replace(/[−–—]/g, '-').replace(/[^\d.\-]/g, '');
+        const neg = v.startsWith('-');
+        v = v.replace(/-/g, '');
+        const [int, ...dec] = v.split('.');
+        input.value = (neg ? '-' : '') + int + (dec.length ? '.' + dec.join('') : '');
+        input.classList.remove('invalid');
+      }
+      ['manual-stock', 'manual-bond'].forEach((id) => $(id).addEventListener('input', () => cleanSigned($(id))));
+      document.querySelectorAll('[data-minus]').forEach((b) => b.addEventListener('click', () => {
+        const input = $(b.dataset.minus);
+        input.value = input.value.startsWith('-') ? input.value.slice(1) : '-' + input.value;
+        input.focus();
+      }));
+
+      function readManual() {
+        const s = $('manual-stock'), b = $('manual-bond');
+        if (!s.value && !b.value) return { scenario: null };
+        const parse = (input) => {
+          if (!input.value || input.value === '-') return 0;
+          const n = parseFloat(input.value);
+          return Number.isFinite(n) && n >= -100 && n <= 100 ? n : NaN;
+        };
+        const stock = parse(s), bond = parse(b);
+        if (Number.isNaN(stock)) return { error: s, msg: 'שינוי במניות צריך להיות בין ‎-100 ל-100.' };
+        if (Number.isNaN(bond)) return { error: b, msg: 'שינוי באג״ח צריך להיות בין ‎-100 ל-100.' };
+        return { scenario: { title: 'התרחיש שלכם', period: 'תרחיש ידני', stock, bond } };
+      }
+
+      // ---------- קלט ----------
+      function readProducts() {
+        const products = [];
+        for (let i = 1; i <= PRODUCT_ROWS; i++) {
+          const codeEl = $(`code-${i}`), amtEl = $(`amount-${i}`);
+          const code = codeEl.value.trim();
+          const amount = Number(amtEl.value.replace(/\D/g, ''));
+          if (!code && !amount) continue;
+          if (!/^\d{1,7}$/.test(code)) return { error: codeEl, msg: `מוצר ${i}: חסר מספר מסלול.` };
+          if (!amount) return { error: amtEl, msg: `מוצר ${i}: חסר סכום צבור.` };
+          products.push({ row: i, code, amount });
+        }
+        if (!products.length) return { error: $('code-1'), msg: 'אנא הזינו לפחות מוצר אחד: מספר מסלול וסכום צבור.' };
+        return { products };
+      }
+
+      function setStatus(text, isError) {
+        statusEl.textContent = text;
+        statusEl.className = 'text-lg ' + (isError ? 'text-burgundy-700 font-semibold' : 'text-charcoal-700');
+      }
+
+      async function fetchFund(code) {
+        const res = await fetch(`/api/scraper?code=${encodeURIComponent(code)}`, { headers: { Accept: 'application/json' } });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'אירעה שגיאה בשליפת הנתונים.');
+        return data;
+      }
+
+      // ---------- תצוגה ----------
+      function renderAllocation(stock, bond) {
+        const sum = stock + bond;
+        const scale = sum > 100 ? 100 / sum : 1; // מסלולים ממונפים: חשיפה כוללת מעל 100%
+        const s = stock * scale, b = bond * scale, o = Math.max(0, 100 - s - b);
+        const other = Math.max(0, 100 - sum);
+
+        $('seg-stock').style.width = s + '%';
+        $('seg-bond').style.width = b + '%';
+        $('seg-other').style.width = o + '%';
+        $('lg-stock').textContent = pct(stock);
+        $('lg-bond').textContent = pct(bond);
+        $('lg-other').textContent = pct(other);
+        $('alloc-bar').setAttribute('aria-label', `מניות ${pct(stock)}, אג״ח ${pct(bond)}, אחר ${pct(other)}`);
+
+        const note = $('alloc-note');
+        note.textContent = 'בחלק מהמסלולים החשיפה הכוללת עולה על 100% (באמצעות נגזרים), ולכן הסרגל מוצג באופן יחסי.';
+        note.classList.toggle('hidden', sum <= 100);
+      }
+
+      function formatDate(iso) {
+        if (!iso) return null;
+        const d = new Date(iso.replace(' ', 'T'));
+        return isNaN(d) ? null : d.toLocaleDateString('he-IL');
+      }
+
+      function renderProducts(funds) {
+        const wrap = $('product-cards');
+        wrap.replaceChildren();
+        wrap.className = `grid gap-4 mb-6 ${funds.length > 1 ? 'md:grid-cols-' + funds.length : ''}`;
+        funds.forEach((f) => {
+          const card = el('article', 'bg-white rounded-xl ring-1 ring-black/5 shadow-sm p-5 flex flex-col gap-2');
+          card.append(
+            el('p', 'text-gold-600 font-semibold text-base', `מוצר ${f.row} · ${f.productType || ''}`),
+            el('h3', 'font-serif text-xl text-navy-900 font-bold leading-snug', f.name)
+          );
+          const dl = el('dl', 'text-base text-charcoal-700 space-y-1 mt-1');
+          const date = formatDate(f.dataDate);
+          [['מספר מסלול', f.code], ['סכום צבור', ils(f.amount)], ['מניות', pct(f.equityPct)], ['אג״ח', pct(f.bondPct)],
+           ...(date ? [['נכון לתאריך', date]] : [])].forEach(([k, v]) => {
+            const line = el('div', 'flex justify-between gap-3');
+            line.append(el('dt', '', k), num('dd', 'font-bold text-charcoal-900', v));
+            dl.append(line);
+          });
+          card.append(dl);
+          if (f.sourceUrl && f.sourceUrl.startsWith('https://www.mygemel.net/')) {
+            const a = el('a', 'text-base underline text-navy-700 mt-auto pt-2', 'לדף המסלול ב-mygemel.net');
+            Object.assign(a, { href: f.sourceUrl, target: '_blank', rel: 'noopener noreferrer' });
+            card.append(a);
+          }
+          wrap.append(card);
+        });
+      }
+
+      function describe(sc) {
+        const part = (label, v) => `מדד ה${label} ${v < 0 ? 'יורד' : v > 0 ? 'עולה' : 'ללא שינוי'}${v ? ' ב-' + pct(Math.abs(v)) : ''}`;
+        return `${part('מניות', sc.stock)}, ${part('אג״ח', sc.bond)}.`;
+      }
+
+      function renderScenarios(funds, scenarios, total) {
+        const wrap = $('scenarios');
+        wrap.replaceChildren();
+        wrap.className = `grid gap-6 mb-10 ${scenarios.length === 3 ? 'lg:grid-cols-3 md:grid-cols-2' : 'md:grid-cols-2'}`;
+
+        scenarios.forEach((sc) => {
+          const lines = funds.map((f) => ({
+            f,
+            change: f.amount * (f.equityPct / 100) * (sc.stock / 100) + f.amount * (f.bondPct / 100) * (sc.bond / 100),
+          }));
+          const change = lines.reduce((s, l) => s + l.change, 0);
+          const changePct = total > 0 ? (change / total) * 100 : 0;
+          const isGain = change > 0;
+          const tone = isGain ? 'forest' : 'burgundy';
+
+          const card = el('article', 'bg-white rounded-2xl shadow-sm ring-1 ring-black/5 overflow-hidden flex flex-col' +
+                                      (sc.period === 'תרחיש ידני' ? ' ring-2 ring-gold-500' : ''));
+          const head = el('div', 'px-6 pt-6 pb-4 border-b border-black/5');
+          head.append(
+            el('p', 'text-gold-600 font-semibold text-base', sc.period),
+            el('h3', 'font-serif text-2xl text-navy-900 font-bold', sc.title),
+            el('p', 'text-base text-charcoal-500 mt-1', describe(sc))
+          );
+
+          const body = el('div', 'p-6 space-y-5 flex-1');
+
+          const drop = el('div', 'flex items-baseline justify-between gap-4');
+          drop.append(el('span', 'text-lg text-charcoal-700', 'שינוי כולל בתיק'),
+                      num('span', `text-2xl font-bold text-${tone}-700`, signed(changePct, pct)));
+
+          const box = el('div', `bg-${tone}-50 rounded-xl p-4`);
+          box.append(el('p', 'text-lg text-charcoal-700', isGain ? 'רווח משוער' : 'הפסד משוער (על הנייר)'),
+                     num('p', `text-3xl sm:text-4xl font-bold text-${tone}-700 mt-1 text-right`, signed(change, ils)));
+
+          const rem = el('div', 'flex items-baseline justify-between gap-4 pt-1');
+          rem.append(el('span', 'text-lg text-charcoal-700', 'יתרה לאחר התרחיש'),
+                     num('span', 'text-2xl font-bold text-navy-900', ils(total + change)));
+
+          body.append(drop, box, rem);
+
+          if (funds.length > 1) {
+            const breakdown = el('ul', 'text-base text-charcoal-700 border-t border-black/5 pt-4 space-y-1');
+            lines.forEach((l) => {
+              const li = el('li', 'flex justify-between gap-3');
+              li.append(el('span', 'truncate', `מוצר ${l.f.row}: ${l.f.name}`), num('span', 'font-semibold shrink-0', signed(l.change, ils)));
+              breakdown.append(li);
+            });
+            body.append(breakdown);
+          }
+
+          card.append(head, body);
+          wrap.append(card);
+        });
+      }
+
+      // ---------- שליחה ----------
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const input = readProducts();
+        if (input.error) { input.error.classList.add('invalid'); input.error.focus(); return setStatus(input.msg, true); }
+        const manual = readManual();
+        if (manual.error) { manual.error.classList.add('invalid'); manual.error.focus(); return setStatus(manual.msg, true); }
+
+        btn.disabled = true;
+        setStatus(input.products.length > 1 ? 'שולפים את נתוני המסלולים…' : 'שולפים את נתוני המסלול…');
+
+        try {
+          const settled = await Promise.allSettled(input.products.map((p) => fetchFund(p.code)));
+          const funds = [], failures = [];
+          settled.forEach((r, idx) => {
+            const p = input.products[idx];
+            if (r.status === 'fulfilled') funds.push({ ...r.value, row: p.row, amount: p.amount });
+            else failures.push(`מוצר ${p.row} (${p.code}): ${r.reason.message}`);
+          });
+          if (!funds.length) throw new Error(failures.join(' '));
+
+          const total = funds.reduce((s, f) => s + f.amount, 0);
+          const wStock = funds.reduce((s, f) => s + f.amount * f.equityPct, 0) / total;
+          const wBond = funds.reduce((s, f) => s + f.amount * f.bondPct, 0) / total;
+
+          $('total-amount').textContent = ils(total);
+          $('products-count').textContent = funds.length === 1 ? 'מוצר אחד' : `${funds.length} מוצרים`;
+          renderAllocation(wStock, wBond);
+          renderProducts(funds);
+
+          const warn = $('fetch-warning');
+          warn.textContent = failures.length ? 'לא נכללו בחישוב: ' + failures.join(' · ') : '';
+          warn.classList.toggle('hidden', !failures.length);
+
+          renderScenarios(funds, manual.scenario ? [...SCENARIOS, manual.scenario] : SCENARIOS, total);
+
+          const results = $('results');
+          results.classList.remove('hidden');
+          setStatus('');
+          results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          results.focus({ preventScroll: true });
+        } catch (err) {
+          setStatus(err.message, true);
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
